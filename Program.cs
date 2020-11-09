@@ -4,45 +4,50 @@ using System.Threading;
 
 namespace Kaffeeautomat
 {
-    class Program
+    class Program // TODO: Fehlerbehandlung
     {      
         static void Main(string[] args)
         {
             int auswahl = 0;
             string eingabe;
 
-            Automat ersterAutomat = new Automat();
-            ersterAutomat.wasser = 10000; // Wassermenge festlegen in ml
-            ersterAutomat.aStatus = Automat.status.bereit;
+            // der Automat kann Kaffee frisch mahlen oder Kakao/ Tee aus einem Fach holen
+            Automat ersterAutomat = new Automat(10000, Automat.status.bereit); // Wassermenge festlegen in ml, Status festlegen
 
-            List<Getraenk> Sorten = new List<Getraenk>()
+            List<Getraenk> sorten = new List<Getraenk>()
             {
-                new Getraenk("Kaffee schwarz", 1.50, 1, 2000, true),
-                new Getraenk("Kaffee weiss", 1.50, 2, 2000, true),
-                new Getraenk("Cappucino", 1.50, 3, 2000, true),
-                new Getraenk("Espresso", 1.50, 4, 1000, true),
-                new Getraenk("Tee", 1, 5, 2000, true),
-                new Getraenk("Wasser heiss", 1.50, 0, 2000, true),
-                new Getraenk("Wasser", 1.50, 0, 2000, false)
+                new Getraenk("Kaffee schwarz", 1.50, 1, 2000, true, true),
+                new Getraenk("Kaffee weiss", 1.50, 2, 2000, true, true),
+                new Getraenk("Cappucino", 1.50, 3, 2000, true, true),
+                new Getraenk("Espresso", 1.50, 4, 1000, true, true),
+                new Getraenk("Kakao", 1.50, 5, 1000, true, true),
+                new Getraenk("Tee", 1, 6, 2000, false, true),
+                new Getraenk("Wasser heiss", 1.50, 0, 2000, false, true),
+                new Getraenk("Wasser", 1.50, 0, 2000, false, false)
             };
-            Console.WriteLine("Kaffeeautomat!\n Wasserstand: {0} Status: {1}", ersterAutomat.wasser, ersterAutomat.aStatus);
-            Console.WriteLine("Folgende Sorten stehen zur Auswahl:\n\n");
-            for (int i = 0; i < Sorten.Count; i++)
-            {
-                Console.WriteLine("{0} {1} {2}", i, Sorten[i].bezeichnung, Sorten[i].preis);
-            }
+
             do
             {
-                Console.WriteLine("\nBitte Nummer wählen:");
-                eingabe = Console.ReadLine();
-            } while (!int.TryParse(eingabe, out auswahl));
+                Console.Clear();
+                Console.WriteLine("Kaffeeautomat!\n\nWasserstand: {0} Status: {1}\n", ersterAutomat.wasser, ersterAutomat.aktuellerStatus);
+                Console.WriteLine("Folgende Sorten stehen zur Auswahl:\n\n");
+                for (int i = 0; i < sorten.Count; i++)
+                {
+                    Console.WriteLine("#{0} {1} -- Preis: {2}", i, sorten[i].bezeichnung, sorten[i].preis);
+                }
+                do
+                {
+                    Console.WriteLine("\nBitte Nummer wählen:");
+                    eingabe = Console.ReadLine();
+                } while (!int.TryParse(eingabe, out auswahl));
 
-            Console.WriteLine("Bitte warten!\n");
-            if (ersterAutomat.Zubereiten(Sorten[auswahl].fach, Sorten[auswahl].dauer, Sorten[auswahl].kochen) == true)
-            {
-                Console.WriteLine("{0} erfolgreich zubereitet, bitte nehmen Sie das Getränk!", Sorten[auswahl]);
-            }
-            Console.ReadLine();
+                Console.WriteLine("Bitte warten!\n");
+                if (ersterAutomat.Zubereiten(sorten[auswahl].fach, sorten[auswahl].dauer, sorten[auswahl].mahlen, sorten[auswahl].kochen) == true)
+                {
+                    Console.WriteLine("{0} erfolgreich zubereitet, bitte nehmen Sie das Getränk!", sorten[auswahl].bezeichnung);
+                }
+                Console.ReadLine();
+            } while (true);
         }
     }
 
@@ -52,12 +57,14 @@ namespace Kaffeeautomat
         public double preis;
         public int fach;
         public int dauer;
+        public bool mahlen;
         public bool kochen;
-        public Getraenk(string bezeichnung, double preis, int fach, int dauer, bool kochen)
+        public Getraenk(string bezeichnung, double preis, int fach, int dauer, bool mahlen, bool kochen)
         {
             this.bezeichnung = bezeichnung;
             this.preis = preis;
             this.fach = fach;
+            this.mahlen = mahlen;
             this.dauer = dauer;
             this.kochen = kochen;
         }      
@@ -67,13 +74,21 @@ namespace Kaffeeautomat
         public enum status { bereit, beschaeftigt, fehler}
 
         public int wasser;
-        public status aStatus;
-        public bool Zubereiten(int fach, int dauer, bool kochen)
+        public status aktuellerStatus;
+
+        public Automat(int wasser, status aktuellerStatus)
         {
-            aStatus = status.beschaeftigt;
+            this.wasser = wasser;
+            this.aktuellerStatus = aktuellerStatus;
+        }
+        public bool Zubereiten(int fach, int dauer, bool mahlen, bool kochen)
+        {
+            aktuellerStatus = status.beschaeftigt;
             Becher();
-            Mahlen(fach);
+            if (mahlen) Mahlen(fach);
+            else Pulver(fach);
             Wasser(dauer, true);
+            aktuellerStatus = status.bereit;
             return true;
         }
         private bool Becher()
@@ -85,12 +100,16 @@ namespace Kaffeeautomat
             Thread.Sleep(3000);
             return true;
         }
-
+        private bool Pulver(int fach)
+        {
+            Thread.Sleep(3000);
+            return true;
+        }
         private bool Wasser(int dauer, bool kochen)
         {
+            this.wasser -= dauer / 1000 * 100; // 100ml pro Sekunde
             Thread.Sleep(dauer);
             return true;
-            aStatus = status.bereit;
         }
     }
     class GeldTransaktion
