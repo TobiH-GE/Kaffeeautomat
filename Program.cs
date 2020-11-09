@@ -16,6 +16,7 @@ namespace Kaffeeautomat
 
             List<Getraenk> sorten = new List<Getraenk>()
             {
+                // Bezeichnung, Preis, Fach, Wassermenge(ms), mahlen, kochen
                 new Getraenk("Kaffee schwarz", 1.50, 1, 2000, true, true),
                 new Getraenk("Kaffee weiss", 1.50, 2, 2000, true, true),
                 new Getraenk("Cappucino", 1.50, 3, 2000, true, true),
@@ -114,7 +115,7 @@ namespace Kaffeeautomat
         private bool Pulver(int fach)
         {
             // -> Fach mit Pulver öffnen
-            Thread.Sleep(2000);
+            Thread.Sleep(1000);
             return true;
         }
         private bool Wasser(int dauer, bool kochen)
