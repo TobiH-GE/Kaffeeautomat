@@ -41,12 +41,21 @@ namespace Kaffeeautomat
                     eingabe = Console.ReadLine();
                 } while (!int.TryParse(eingabe, out auswahl));
 
-                Console.WriteLine("Bitte warten!\n");
-                if (ersterAutomat.Zubereiten(sorten[auswahl].fach, sorten[auswahl].dauer, sorten[auswahl].mahlen, sorten[auswahl].kochen) == true)
+                if (auswahl >= 0 && auswahl < sorten.Count)
                 {
-                    Console.WriteLine("{0} erfolgreich zubereitet, bitte nehmen Sie das Getränk!", sorten[auswahl].bezeichnung);
+                    Console.WriteLine("Bitte warten!\n");
+                    if (ersterAutomat.Zubereiten(sorten[auswahl].fach, sorten[auswahl].dauer, sorten[auswahl].mahlen, sorten[auswahl].kochen) == true)
+                    {
+                        Console.WriteLine("{0} erfolgreich zubereitet, bitte nehmen Sie das Getränk!", sorten[auswahl].bezeichnung);
+                    }
+                    Console.ReadLine();
                 }
-                Console.ReadLine();
+                else
+                {
+                    Console.WriteLine("Fehler bei der Auswahl!\n");
+                    Console.ReadLine();
+                }
+                
             } while (true);
         }
     }
@@ -93,22 +102,32 @@ namespace Kaffeeautomat
         }
         private bool Becher()
         {
+            // -> Becher bereitstellen
             return true;
         }
         private bool Mahlen(int fach)
         {
-            Thread.Sleep(3000);
+            // -> Mahlwerk aktivieren
+            Thread.Sleep(2000);
             return true;
         }
         private bool Pulver(int fach)
         {
-            Thread.Sleep(3000);
+            // -> Fach mit Pulver öffnen
+            Thread.Sleep(2000);
             return true;
         }
         private bool Wasser(int dauer, bool kochen)
         {
             this.wasser -= dauer / 1000 * 100; // 100ml pro Sekunde
             Thread.Sleep(dauer);
+
+            if (kochen)
+            {
+                // -> Wasserkochen
+                Thread.Sleep(2000);
+            }
+            
             return true;
         }
     }
