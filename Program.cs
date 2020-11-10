@@ -8,32 +8,21 @@ namespace Kaffeeautomat
     {
         static void Main(string[] args)
         {
-            List<Getraenk> sorten = new List<Getraenk>()
-            {
-                // Bezeichnung, Fach, Kaffeemenge, Wassermenge, Milchmenge, mahlen
-                new Getraenk("Kaffee schwarz, klein", 1, 15, 1500, 0, true),
-                new Getraenk("Kaffee schwarz, gross", 1, 30, 3000, 0, true),
-                new Getraenk("Kaffee mit Milch", 2, 20, 2000, 1000, true),
-                new Getraenk("Cappucino", 3, 30, 1000, 2000, true),
-                new Getraenk("Espresso", 4, 30, 1000, 0, true),
-                new Getraenk("Wasser heiss", 0, 0, 3000, 0, false)
-            };
-
-            Automat ersterAutomat = new Automat(1000, 1000, 500, Automat.status.bereit, sorten.Count - 1); // Kaffee, Wassermenge, Milch, Status, Anzahl Auswahl
+            Automat aAutomat = new Automat(1000, 1000, 500); // Kaffee, Wassermenge, Milch
             
             List<UIObject> UIElements = new List<UIObject>();
 
-            for (int i = 0; i < sorten.Count; i++)
+            for (int i = 0; i < Automat.sorten.Count; i++)
             {
-                UIElements.Add(new Button(sorten[i].bezeichnung, 5, i + 5));
+                UIElements.Add(new Button(Automat.sorten[i].bezeichnung, 5, i + 5));
             }       
             UIElements.Add(new Text("Kaffeeautomat by TobiH!", 0, 0));
-            UIElements.Add(new Text(ersterAutomat.GetStatusString(), 0, 1));
+            UIElements.Add(new Text(aAutomat.GetStatusString(), 0, 1));
             UIElements.Add(new Text("Folgende Sorten stehen zur Auswahl:", 0, 3));
             UIElements.Add(new Text("W -> Wartung, X -> ausschalten", 0, 12));
             UIElements.Add(new Text("Info: ", 0, 14));
 
-            int UIElementWithStatus = sorten.Count + 1;
+            int UIElementWithStatus = Automat.sorten.Count + 1;
 
             Console.Clear();
             Console.CursorVisible = false;
@@ -41,7 +30,7 @@ namespace Kaffeeautomat
             ConsoleKeyInfo UserInput = new ConsoleKeyInfo();
             do
             {
-                UIElements[ersterAutomat.auswahl].selected = true; ;
+                UIElements[aAutomat.auswahl].selected = true;
                 DrawUIElements(ref UIElements);
 
                 UserInput = Console.ReadKey();
@@ -49,10 +38,10 @@ namespace Kaffeeautomat
                 switch (UserInput.Key)
                 {
                     case ConsoleKey.UpArrow:
-                        UIElements[ersterAutomat.Auswahl--].selected = false;
+                        UIElements[aAutomat.Auswahl--].selected = false;
                         break;
                     case ConsoleKey.DownArrow:
-                        UIElements[ersterAutomat.Auswahl++].selected = false;
+                        UIElements[aAutomat.Auswahl++].selected = false;
                         break;
                     case ConsoleKey.W:
                         Warten();
@@ -67,26 +56,28 @@ namespace Kaffeeautomat
 
             void Warten()
             {
+                aAutomat.aktuellerStatus = Automat.status.Wartung;
+                UIElements[UIElementWithStatus].TextWithDraw = aAutomat.GetStatusString();
                 PrintInfo($"Automat wird aufgefüllt, bitte warten!");
-                ersterAutomat.Warten();
-                UIElements[UIElementWithStatus].text = ersterAutomat.GetStatusString();
+                aAutomat.Warten();
                 PrintInfo($"Wartung beendet.");
+                UIElements[UIElementWithStatus].TextWithDraw = aAutomat.GetStatusString();
             }
 
             void Auswahl()
             {
-                if (!ersterAutomat.Pruefen(sorten[ersterAutomat.auswahl]))
+                if (!aAutomat.Pruefen(Automat.sorten[aAutomat.auswahl]))
                 {
                     PrintInfo($"Fehler! Bitte warten Sie das Gerät!");
-                    ersterAutomat.aktuellerStatus = Automat.status.Wartung;
-                    UIElements[UIElementWithStatus].text = ersterAutomat.GetStatusString();
+                    aAutomat.aktuellerStatus = Automat.status.Wartung;
+                    UIElements[UIElementWithStatus].text = aAutomat.GetStatusString();
                     return;
                 }
-                PrintInfo($"{sorten[ersterAutomat.auswahl].bezeichnung} wird zubereitet, bitte warten!");
-                ersterAutomat.aktuellerStatus = Automat.status.beschaeftigt;
-                UIElements[UIElementWithStatus].TextWithDraw = ersterAutomat.GetStatusString();
+                PrintInfo($"{Automat.sorten[aAutomat.auswahl].bezeichnung} wird zubereitet, bitte warten!");
+                aAutomat.aktuellerStatus = Automat.status.beschaeftigt;
+                UIElements[UIElementWithStatus].TextWithDraw = aAutomat.GetStatusString();
                 Thread.Sleep(1000);
-                if (ersterAutomat.Zubereiten(sorten[ersterAutomat.auswahl]))
+                if (aAutomat.Zubereiten(Automat.sorten[aAutomat.auswahl]))
                 {
                     PrintInfo($"Vorgang beendet.");
                 }
@@ -95,12 +86,12 @@ namespace Kaffeeautomat
                     PrintInfo($"Es ist ein Fehler aufgetreten!");
                 }
                 Thread.Sleep(1000);
-                UIElements[UIElementWithStatus].text = ersterAutomat.GetStatusString();
+                UIElements[UIElementWithStatus].text = aAutomat.GetStatusString();
             }
 
             void PrintInfo(string info)
             {
-                UIElements[sorten.Count + 4].TextWithDraw = "Info: "+info+"                                    ";
+                UIElements[Automat.sorten.Count + 4].TextWithDraw = "Info: "+info+"                                    ";
             }
 
             void DrawUIElements(ref List<UIObject> UIElementes)
