@@ -8,11 +8,9 @@ namespace Kaffeeautomat
     {
         static void Main(string[] args)
         {
-            ConsoleKeyInfo UserInput = new ConsoleKeyInfo();
-
             List<Getraenk> sorten = new List<Getraenk>()
             {
-                // Bezeichnung, Fach, Kaffeemenge, Wassermenge(ms), Milchmenge, mahlen
+                // Bezeichnung, Fach, Kaffeemenge, Wassermenge, Milchmenge, mahlen
                 new Getraenk("Kaffee schwarz, klein", 1, 15, 1500, 0, true),
                 new Getraenk("Kaffee schwarz, gross", 1, 30, 3000, 0, true),
                 new Getraenk("Kaffee mit Milch", 2, 20, 2000, 1000, true),
@@ -21,7 +19,7 @@ namespace Kaffeeautomat
                 new Getraenk("Wasser heiss", 0, 0, 3000, 0, false)
             };
 
-            Automat ersterAutomat = new Automat(1000, 1000, 500, Automat.status.bereit, sorten.Count - 1); // Kaffee, Wassermenge, Milch, Status festlegen
+            Automat ersterAutomat = new Automat(1000, 1000, 500, Automat.status.bereit, sorten.Count - 1); // Kaffee, Wassermenge, Milch, Status, Anzahl Auswahl
             
             List<UIObject> UIElements = new List<UIObject>();
 
@@ -32,15 +30,18 @@ namespace Kaffeeautomat
             UIElements.Add(new Text("Kaffeeautomat by TobiH!", 0, 0));
             UIElements.Add(new Text(ersterAutomat.GetStatusString(), 0, 1));
             UIElements.Add(new Text("Folgende Sorten stehen zur Auswahl:", 0, 3));
-            UIElements.Add(new Text("W -> Wartung, X -> ausschalten", 0, 15));
-            UIElements.Add(new Text("Info: ", 0, 17));
+            UIElements.Add(new Text("W -> Wartung, X -> ausschalten", 0, 12));
+            UIElements.Add(new Text("Info: ", 0, 14));
+
+            int UIElementWithStatus = sorten.Count + 1;
 
             Console.Clear();
             Console.CursorVisible = false;
 
+            ConsoleKeyInfo UserInput = new ConsoleKeyInfo();
             do
             {
-                SelectUIElement(ref UIElements, ersterAutomat.auswahl); //TODO: UIElements.Draw() verbessern
+                UIElements[ersterAutomat.auswahl].selected = true; ;
                 DrawUIElements(ref UIElements);
 
                 UserInput = Console.ReadKey();
@@ -48,54 +49,65 @@ namespace Kaffeeautomat
                 switch (UserInput.Key)
                 {
                     case ConsoleKey.UpArrow:
-                        ersterAutomat.Auswahl--;
+                        UIElements[ersterAutomat.Auswahl--].selected = false;
                         break;
                     case ConsoleKey.DownArrow:
-                        ersterAutomat.Auswahl++;
+                        UIElements[ersterAutomat.Auswahl++].selected = false;
                         break;
                     case ConsoleKey.W:
-                        // Wartung
-                        ersterAutomat.Warten();
-                        UIElements[sorten.Count + 1].text = ersterAutomat.GetStatusString();
+                        Warten();
                         break;
                     case ConsoleKey.Enter:
-                        // Auswahl
-                        UIElements[sorten.Count + 4].TextWithDraw = $"{sorten[ersterAutomat.auswahl].bezeichnung} wird zubereitet, bitte warten!  ";
-                        Thread.Sleep(1000);
-                        if (ersterAutomat.Zubereiten(sorten[ersterAutomat.auswahl]))
-                        {
-                            UIElements[sorten.Count + 4].TextWithDraw = $"Vorgang beendet.                                 ";
-                        }
-                        else
-                        {
-                            UIElements[sorten.Count + 4].TextWithDraw = $"Es ist ein Fehler aufgetreten!                       ";
-                        }
-                        Thread.Sleep(1000);
-                        UIElements[sorten.Count + 1].text = ersterAutomat.GetStatusString();
+                        Auswahl();
                         break;
                     default:
                         break;
                 }
             } while (UserInput.Key != ConsoleKey.X);
-        }
-        public static void DrawUIElements(ref List<UIObject> UIElementes)
-        {
-            for (int i = 0; i < UIElementes.Count; i++)
+
+            void Warten()
             {
-                UIElementes[i].Draw();
+                PrintInfo($"Automat wird aufgefüllt, bitte warten!");
+                ersterAutomat.Warten();
+                UIElements[UIElementWithStatus].text = ersterAutomat.GetStatusString();
+                PrintInfo($"Wartung beendet.");
             }
-        }
-        public static void SelectUIElement(ref List<UIObject> UIElementes, int index)
-        {
-            for (int i = 0; i < UIElementes.Count; i++)
+
+            void Auswahl()
             {
-                if (i == index)
+                if (!ersterAutomat.Pruefen(sorten[ersterAutomat.auswahl]))
                 {
-                    UIElementes[i].selected = true;
+                    PrintInfo($"Fehler! Bitte warten Sie das Gerät!");
+                    ersterAutomat.aktuellerStatus = Automat.status.Wartung;
+                    UIElements[UIElementWithStatus].text = ersterAutomat.GetStatusString();
+                    return;
+                }
+                PrintInfo($"{sorten[ersterAutomat.auswahl].bezeichnung} wird zubereitet, bitte warten!");
+                ersterAutomat.aktuellerStatus = Automat.status.beschaeftigt;
+                UIElements[UIElementWithStatus].TextWithDraw = ersterAutomat.GetStatusString();
+                Thread.Sleep(1000);
+                if (ersterAutomat.Zubereiten(sorten[ersterAutomat.auswahl]))
+                {
+                    PrintInfo($"Vorgang beendet.");
                 }
                 else
                 {
-                    UIElementes[i].selected = false;
+                    PrintInfo($"Es ist ein Fehler aufgetreten!");
+                }
+                Thread.Sleep(1000);
+                UIElements[UIElementWithStatus].text = ersterAutomat.GetStatusString();
+            }
+
+            void PrintInfo(string info)
+            {
+                UIElements[sorten.Count + 4].TextWithDraw = "Info: "+info+"                                    ";
+            }
+
+            void DrawUIElements(ref List<UIObject> UIElementes)
+            {
+                for (int i = 0; i < UIElementes.Count; i++)
+                {
+                    UIElementes[i].Draw();
                 }
             }
         }

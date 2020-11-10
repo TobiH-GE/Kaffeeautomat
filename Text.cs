@@ -13,6 +13,5 @@ namespace Kaffeeautomat
             this.bColor = bColor;
             this.selected = selected;
         }
-    }
-    
+    }  
 }

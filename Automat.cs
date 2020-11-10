@@ -4,7 +4,7 @@ namespace Kaffeeautomat
 {
     class Automat
     {
-        public enum status { bereit, beschaeftigt, warnung, fehler}
+        public enum status { bereit, beschaeftigt, Wartung, Fehler}
 
         public int kaffee;
         public int wasser;
@@ -34,9 +34,17 @@ namespace Kaffeeautomat
             this.aktuellerStatus = aktuellerStatus;
             this.maxRange = maxRange;
         }
+        public bool Pruefen(Getraenk auswahl)
+        {
+            if (auswahl.mengeKaffee > kaffee ||
+                auswahl.dauerWasser > wasser*10 ||
+                auswahl.dauerMilch > milch*10)
+                return false;
+            return true;
+        }
+
         public bool Zubereiten(Getraenk auswahl)
         {
-            aktuellerStatus = status.beschaeftigt;
             Kaffee(auswahl.mengeKaffee);
             if (auswahl.mahlen) Mahlen(auswahl.fach);
             Wasser(auswahl.dauerWasser);
@@ -70,17 +78,17 @@ namespace Kaffeeautomat
             return true;
         }
 
-        public bool Warten()
+        public void Warten()
         {
+            Thread.Sleep(2000);
             kaffee = 1000;
             wasser = 1000;
             milch = 500;
-            return true;
         }
 
         public string GetStatusString()
         {
-            string myString = $"Kaffee(g): {kaffee} Wasserstand: {wasser} Milch: {milch} Status: {aktuellerStatus}      ";
+            string myString = $"Kaffee(g): {kaffee} Wasserstand: {wasser} Milch: {milch} Status: {aktuellerStatus}                 ";
             return myString;
         }
     }
