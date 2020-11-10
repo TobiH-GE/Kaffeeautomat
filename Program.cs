@@ -11,8 +11,7 @@ namespace Kaffeeautomat
             int auswahl = 0;
             ConsoleKeyInfo UserInput = new ConsoleKeyInfo();
 
-            // der Automat kann Kaffee frisch mahlen oder Kakao/ Tee aus einem Fach holen
-            Automat ersterAutomat = new Automat(1000, 1000, 500, Automat.status.bereit); // Wassermenge festlegen in ml, Becher, Status festlegen
+            Automat ersterAutomat = new Automat(1000, 1000, 500, Automat.status.bereit); // Kaffee, Wassermenge, Milch, Status festlegen
 
             List<Getraenk> sorten = new List<Getraenk>()
             {
@@ -28,7 +27,7 @@ namespace Kaffeeautomat
 
             for (int i = 0; i < sorten.Count; i++)
             {
-                UIElementes.Add(new Button(UIObject.Type.Buttom, sorten[i].bezeichnung, 5, i + 5, ConsoleColor.White, ConsoleColor.Black, false));
+                UIElementes.Add(new Button(UIObject.Type.Buttom, sorten[i].bezeichnung, 5, i + 5));
             }       
             UIElementes.Add(new Text(UIObject.Type.Text, "Kaffeeautomat!", 0, 0));
             UIElementes.Add(new Text(UIObject.Type.Text, $"Kaffee (g): {ersterAutomat.kaffee} Wasserstand: {ersterAutomat.wasser} Milch: {ersterAutomat.milch} Status: {ersterAutomat.aktuellerStatus}", 0, 1));
