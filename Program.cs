@@ -10,8 +10,6 @@ namespace Kaffeeautomat
         {
             ConsoleKeyInfo UserInput = new ConsoleKeyInfo();
 
-            Automat ersterAutomat = new Automat(1000, 1000, 500, Automat.status.bereit); // Kaffee, Wassermenge, Milch, Status festlegen
-
             List<Getraenk> sorten = new List<Getraenk>()
             {
                 // Bezeichnung, Fach, Kaffeemenge, Wassermenge(ms), Milchmenge, mahlen
@@ -22,6 +20,9 @@ namespace Kaffeeautomat
                 new Getraenk("Espresso", 4, 30, 1000, 0, true),
                 new Getraenk("Wasser heiss", 0, 0, 3000, 0, false)
             };
+
+            Automat ersterAutomat = new Automat(1000, 1000, 500, Automat.status.bereit, sorten.Count - 1); // Kaffee, Wassermenge, Milch, Status festlegen
+            
             List<UIObject> UIElements = new List<UIObject>();
 
             for (int i = 0; i < sorten.Count; i++)
@@ -47,14 +48,10 @@ namespace Kaffeeautomat
                 switch (UserInput.Key)
                 {
                     case ConsoleKey.UpArrow:
-                        ersterAutomat.auswahl--;
-                        if (ersterAutomat.auswahl < 0) ersterAutomat.auswahl = sorten.Count - 1;
-                        UIElements[ersterAutomat.auswahl].text = $"{sorten[ersterAutomat.auswahl].bezeichnung}";
+                        ersterAutomat.Auswahl--;
                         break;
                     case ConsoleKey.DownArrow:
-                        ersterAutomat.auswahl++;
-                        if (ersterAutomat.auswahl > sorten.Count - 1) ersterAutomat.auswahl = 0;
-                        UIElements[ersterAutomat.auswahl].text = $"{sorten[ersterAutomat.auswahl].bezeichnung}";
+                        ersterAutomat.Auswahl++;
                         break;
                     case ConsoleKey.W:
                         // Wartung
@@ -101,156 +98,6 @@ namespace Kaffeeautomat
                     UIElementes[i].selected = false;
                 }
             }
-        }
-    }
-    class Getraenk
-    {
-        public string bezeichnung;
-        public int fach;
-        public int mengeKaffee;
-        public int dauerWasser;
-        public int dauerMilch;
-        public bool mahlen;
-        public Getraenk(string bezeichnung, int fach, int mengeKaffee, int dauerWasser, int dauerMilch, bool mahlen)
-        {
-            this.bezeichnung = bezeichnung;
-            this.fach = fach;
-            this.mengeKaffee = mengeKaffee;
-            this.mahlen = mahlen;
-            this.dauerWasser = dauerWasser;
-            this.dauerMilch = dauerMilch;
-        }
-    }
-
-    class UIObject
-    {
-        public string text;
-        protected int x;
-        protected int y;
-        protected ConsoleColor fColor;
-        protected ConsoleColor bColor;
-        public bool selected;
-
-        public string TextWithDraw
-        {
-            get
-            {
-                return text;
-            }
-            set
-            {
-                text = value;
-                Draw();
-            }
-        }
-        
-        public void Draw()
-        {
-            Console.SetCursorPosition(x, y);
-            Console.ForegroundColor = fColor;
-            if (selected)
-            {
-                Console.BackgroundColor = ConsoleColor.Green;
-            }
-            else
-            {
-                Console.BackgroundColor = bColor;
-            }
-            Console.Write(text);
-            Console.ResetColor();
-        }
-    }
-    class Button : UIObject
-    {
-        public Button(string text, int x, int y, ConsoleColor fColor = ConsoleColor.White, ConsoleColor bColor = ConsoleColor.Black, bool selected = false)
-        {
-            this.text = text;
-            this.x = x;
-            this.y = y;
-            this.fColor = fColor;
-            this.bColor = bColor;
-            this.selected = selected;
-        }
-    }
-    class Text : UIObject
-    {
-        public bool selected;
-
-        public Text(string text, int x, int y, ConsoleColor fColor = ConsoleColor.White, ConsoleColor bColor = ConsoleColor.Black, bool selected = false)
-        {
-            this.text = text;
-            this.x = x;
-            this.y = y;
-            this.fColor = fColor;
-            this.bColor = bColor;
-            this.selected = selected;
-        }
-    }
-
-    class Automat
-    {
-        public enum status { bereit, beschaeftigt, warnung, fehler}
-
-        public int kaffee;
-        public int wasser;
-        public int milch;
-        public status aktuellerStatus;
-        public int auswahl;
-        public Automat(int kaffee, int wasser, int milch, status aktuellerStatus, int auswahl = 0)
-        {
-            this.kaffee = kaffee;
-            this.wasser = wasser;
-            this.milch = milch;
-            this.aktuellerStatus = aktuellerStatus;
-        }
-        public bool Zubereiten(Getraenk auswahl)
-        {
-            aktuellerStatus = status.beschaeftigt;
-            Kaffee(auswahl.mengeKaffee);
-            if (auswahl.mahlen) Mahlen(auswahl.fach);
-            Wasser(auswahl.dauerWasser);
-            Milch(auswahl.dauerMilch);
-            aktuellerStatus = status.bereit;
-            return true;
-        }
-        private bool Kaffee(int menge)
-        {
-            kaffee -= menge; // in g           
-            Thread.Sleep(1000);
-            return true;
-        }
-        private bool Mahlen(int fach)
-        {
-            // -> Mahlwerk aktivieren
-            Thread.Sleep(2000);
-            return true;
-        }
-        private bool Wasser(int dauer)
-        {
-            wasser -= dauer / 10; // 100ml pro Sekunde           
-            Thread.Sleep(dauer);
-            return true;
-        }
-
-        private bool Milch(int dauer)
-        {
-            milch -= dauer / 10; // 100ml pro Sekunde
-            Thread.Sleep(dauer);
-            return true;
-        }
-
-        public bool Warten()
-        {
-            kaffee = 1000;
-            wasser = 1000;
-            milch = 500;
-            return true;
-        }
-
-        public string GetStatusString()
-        {
-            string myString = $"Kaffee(g): {kaffee} Wasserstand: {wasser} Milch: {milch} Status: {aktuellerStatus}      ";
-            return myString;
         }
     }
     
