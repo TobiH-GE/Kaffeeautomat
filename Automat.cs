@@ -5,6 +5,8 @@ namespace Kaffeeautomat
 {
     class Automat
     {
+        public UIConsole UIConsole1 = new UIConsole();
+
         public static List<Getraenk> sorten = new List<Getraenk>()
             {
                 // Bezeichnung, Fach, Kaffeemenge, Wassermenge, Milchmenge, mahlen
@@ -15,14 +17,34 @@ namespace Kaffeeautomat
                 new Getraenk("Espresso", 4, 30, 1000, 0, true),
                 new Getraenk("Wasser heiss", 0, 0, 3000, 0, false)
             };
+
         public enum status { bereit, beschaeftigt, Wartung, Fehler}
 
         public int kaffee;
         public int wasser;
         public int milch;
         public status aktuellerStatus;
-        public int maxRange = sorten.Count;
+        public int maxRange = sorten.Count - 1;
         public int auswahl;
+
+        int UIElementWithStatus = sorten.Count + 1;
+
+        public void Start()
+        {
+            for (int i = 0; i<sorten.Count; i++)
+            {
+                UIConsole1.UIElements.Add(new Button(sorten[i].bezeichnung, 5, i + 5));
+            }
+            UIConsole1.UIElements.Add(new Text("Kaffeeautomat by TobiH!", 0, 0));
+            UIConsole1.UIElements.Add(new Text(GetStatusString(), 0, 1));
+            UIConsole1.UIElements.Add(new Text("Folgende Sorten stehen zur Auswahl:", 0, 3));
+            UIConsole1.UIElements.Add(new Text("W -> Wartung, X -> ausschalten", 0, 12));
+            UIConsole1.UIElements.Add(new Text("Info: ", 0, 14));
+
+            UIConsole1.UIElements[auswahl].selected = true;
+
+            UIConsole1.DrawUIElements();
+        }
 
         public int Auswahl
         {
@@ -32,9 +54,13 @@ namespace Kaffeeautomat
             }
             set
             {
+                UIConsole1.UIElements[auswahl].selected = false;
                 auswahl = value;
                 if (Auswahl < 0) auswahl = maxRange;
                 else if (Auswahl > maxRange) auswahl = 0;
+
+                UIConsole1.UIElements[auswahl].selected = true;
+                UIConsole1.DrawUIElements();
             }
         }
         public Automat(int kaffee, int wasser, int milch, status aktuellerStatus = status.bereit, int auswahl = 0)
@@ -88,19 +114,50 @@ namespace Kaffeeautomat
             return true;
         }
 
+        public string GetStatusString()
+        {
+            string myString = $"Kaffee(g): {kaffee} Wasserstand: {wasser} Milch: {milch} Status: {aktuellerStatus}                 ";
+            return myString;
+        }
+
         public void Warten()
         {
+            aktuellerStatus = Automat.status.Wartung;
+            UIConsole1.UIElements[UIElementWithStatus].TextWithDraw = GetStatusString();
+            UIConsole1.PrintInfo($"Automat wird aufgefüllt, bitte warten!");
+
             Thread.Sleep(2000);
             kaffee = 1000;
             wasser = 1000;
             milch = 500;
             aktuellerStatus = status.bereit;
-        }
 
-        public string GetStatusString()
+            UIConsole1.PrintInfo($"Wartung beendet.");
+            UIConsole1.UIElements[UIElementWithStatus].TextWithDraw = GetStatusString();
+        }
+        public void AuswahlAusfuheren()
         {
-            string myString = $"Kaffee(g): {kaffee} Wasserstand: {wasser} Milch: {milch} Status: {aktuellerStatus}                 ";
-            return myString;
+            if (!Pruefen(Automat.sorten[auswahl]))
+            {
+                UIConsole1.PrintInfo($"Fehler! Bitte warten Sie das Gerät!");
+                aktuellerStatus = Automat.status.Wartung;
+                UIConsole1.UIElements[UIElementWithStatus].TextWithDraw = GetStatusString();
+                return;
+            }
+            UIConsole1.PrintInfo($"{Automat.sorten[auswahl].bezeichnung} wird zubereitet, bitte warten!");
+            aktuellerStatus = Automat.status.beschaeftigt;
+            UIConsole1.UIElements[UIElementWithStatus].TextWithDraw = GetStatusString();
+            Thread.Sleep(1000);
+            if (Zubereiten(Automat.sorten[auswahl]))
+            {
+                UIConsole1.PrintInfo($"Vorgang beendet.");
+            }
+            else
+            {
+                UIConsole1.PrintInfo($"Es ist ein Fehler aufgetreten!");
+            }
+            Thread.Sleep(1000);
+            UIConsole1.UIElements[UIElementWithStatus].TextWithDraw = GetStatusString();
         }
     }
     
