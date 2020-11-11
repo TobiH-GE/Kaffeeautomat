@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Kaffeeautomat
 {
-    class Automat
+    partial class Automat
     {
         public UIConsole UIConsole1 = new UIConsole();
 
@@ -18,16 +18,12 @@ namespace Kaffeeautomat
                 new Getraenk("Wasser heiss", 0, 0, 3000, 0, false)
             };
 
-        public enum status { bereit, beschaeftigt, Wartung, Fehler}
-
         public int kaffee;
         public int wasser;
         public int milch;
         public status aktuellerStatus;
         public int maxRange = sorten.Count - 1;
         public int auswahl;
-
-        int UIElementWithStatus = sorten.Count + 1;
 
         public void Start()
         {
@@ -122,8 +118,8 @@ namespace Kaffeeautomat
 
         public void Warten()
         {
-            aktuellerStatus = Automat.status.Wartung;
-            UIConsole1.UIElements[UIElementWithStatus].TextWithDraw = GetStatusString();
+            aktuellerStatus = status.Wartung;
+            UIConsole1.PrintStatus(GetStatusString());
             UIConsole1.PrintInfo($"Automat wird aufgefüllt, bitte warten!");
 
             Thread.Sleep(2000);
@@ -133,22 +129,22 @@ namespace Kaffeeautomat
             aktuellerStatus = status.bereit;
 
             UIConsole1.PrintInfo($"Wartung beendet.");
-            UIConsole1.UIElements[UIElementWithStatus].TextWithDraw = GetStatusString();
+            UIConsole1.PrintStatus(GetStatusString());
         }
         public void AuswahlAusfuheren()
         {
-            if (!Pruefen(Automat.sorten[auswahl]))
+            if (!Pruefen(sorten[auswahl]))
             {
                 UIConsole1.PrintInfo($"Fehler! Bitte warten Sie das Gerät!");
-                aktuellerStatus = Automat.status.Wartung;
-                UIConsole1.UIElements[UIElementWithStatus].TextWithDraw = GetStatusString();
+                aktuellerStatus = status.Wartung;
+                UIConsole1.PrintStatus(GetStatusString());
                 return;
             }
-            UIConsole1.PrintInfo($"{Automat.sorten[auswahl].bezeichnung} wird zubereitet, bitte warten!");
-            aktuellerStatus = Automat.status.beschaeftigt;
-            UIConsole1.UIElements[UIElementWithStatus].TextWithDraw = GetStatusString();
+            UIConsole1.PrintInfo($"{sorten[auswahl].bezeichnung} wird zubereitet, bitte warten!");
+            aktuellerStatus = status.beschaeftigt;
+            UIConsole1.PrintStatus(GetStatusString());
             Thread.Sleep(1000);
-            if (Zubereiten(Automat.sorten[auswahl]))
+            if (Zubereiten(sorten[auswahl]))
             {
                 UIConsole1.PrintInfo($"Vorgang beendet.");
             }
@@ -157,7 +153,7 @@ namespace Kaffeeautomat
                 UIConsole1.PrintInfo($"Es ist ein Fehler aufgetreten!");
             }
             Thread.Sleep(1000);
-            UIConsole1.UIElements[UIElementWithStatus].TextWithDraw = GetStatusString();
+            UIConsole1.PrintStatus(GetStatusString());
         }
     }
     

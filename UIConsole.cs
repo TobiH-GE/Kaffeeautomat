@@ -5,6 +5,8 @@ namespace Kaffeeautomat
     class UIConsole
     {
         public List<UIObject> UIElements = new List<UIObject>();
+        int UIElementWithStatus = Automat.sorten.Count + 1; // welches UIElement enthält den Status-Text
+        int UIElementWithInfo = Automat.sorten.Count + 4; // welches UIElement enthält den Info-Text
 
         public void DrawUIElements()
         {
@@ -15,7 +17,11 @@ namespace Kaffeeautomat
         }
         public void PrintInfo(string info)
         {
-            UIElements[Automat.sorten.Count + 4].TextWithDraw = "Info: " + info + "                                    ";
+            UIElements[UIElementWithInfo].TextWithDraw = "Info: " + info + "                                    ";
+        }
+        public void PrintStatus(string statusstr)
+        {
+            UIElements[UIElementWithStatus].TextWithDraw = statusstr + "                                    ";
         }
     }
 }
