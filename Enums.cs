@@ -1,4 +1,4 @@
 ﻿namespace Kaffeeautomat
 {
-        public enum status { bereit, beschaeftigt, Wartung, Fehler}
+        public enum status { ausgeschaltet, bereit, beschaeftigt, benoetigt_Wartung, Wartung, Fehler}
 }

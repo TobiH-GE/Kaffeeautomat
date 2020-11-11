@@ -11,7 +11,10 @@ namespace Kaffeeautomat
         protected ConsoleColor bColor;
         public bool selected;
 
-        public string TextWithDraw // ändert den Text in einem UIObject und zeichnet nur dieses Object mit Draw() neu
+        /// <summary>
+        /// ändert den Text in einem UIObject und zeichnet nur dieses UIObject mit Draw() neu
+        /// </summary>
+        public string TextWithDraw
         {
             get
             {
@@ -24,6 +27,9 @@ namespace Kaffeeautomat
             }
         }
         
+        /// <summary>
+        /// zeichnet ein UI-Element an Position x,y
+        /// </summary>
         public void Draw()
         {
             Console.SetCursorPosition(x, y);

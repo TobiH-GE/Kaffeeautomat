@@ -7,36 +7,14 @@ namespace Kaffeeautomat
     {
         static void Main(string[] args)
         {
-            Automat aAutomat = new Automat(1000, 1000, 500); // Kaffee, Wassermenge, Milch
-            
-            Console.Clear();
-            Console.CursorVisible = false;
+            Automat aAutomat = new Automat(1000, 1000, 500); // neuer Automat (Kaffee, Wassermenge, Milch)
+            var aUIConsole = aAutomat.Start(); // Automat starten, liefert vom Automaten verwendete UI zurück
 
-            aAutomat.Start();
-
-            ConsoleKeyInfo UserInput = new ConsoleKeyInfo();
             do
             {
-                UserInput = Console.ReadKey();
-
-                switch (UserInput.Key)
-                {
-                    case ConsoleKey.UpArrow:
-                        aAutomat.Auswahl--;
-                        break;
-                    case ConsoleKey.DownArrow:
-                        aAutomat.Auswahl++;
-                        break;
-                    case ConsoleKey.W:
-                        aAutomat.Warten();
-                        break;
-                    case ConsoleKey.Enter:
-                        aAutomat.AuswahlAusfuheren();
-                        break;
-                    default:
-                        break;
-                }
-            } while (UserInput.Key != ConsoleKey.X);
+                aUIConsole.WaitForInput();
+            } while (aAutomat.AktuellerStatus != status.ausgeschaltet);
+            
         }
     }
 }

@@ -21,8 +21,6 @@ namespace Kaffeeautomat
         public int kaffee;
         public int wasser;
         public int milch;
-        public int maxRange = sorten.Count - 1;
-        public int auswahl;
         public status aktuellerStatus;
 
         public status AktuellerStatus
@@ -34,44 +32,15 @@ namespace Kaffeeautomat
             set
             {
                 aktuellerStatus = value;
-                UIConsole1.PrintStatus(GetStatusString());
+                UIConsole1.PrintStatus(GetStatusString()); // Status hat sich geändert, automatisch in der UIConsole ausgeben
             }
         }
 
-        public void Start()
-        {
-            for (int i = 0; i<sorten.Count; i++)
-            {
-                UIConsole1.UIElements.Add(new Button(sorten[i].bezeichnung, 5, i + 5));
-            }
-            UIConsole1.UIElements.Add(new Text("Kaffeeautomat by TobiH!", 0, 0));
-            UIConsole1.UIElements.Add(new Text(GetStatusString(), 0, 1));
-            UIConsole1.UIElements.Add(new Text("Folgende Sorten stehen zur Auswahl:", 0, 3));
-            UIConsole1.UIElements.Add(new Text("W -> Wartung, X -> ausschalten", 0, 12));
-            UIConsole1.UIElements.Add(new Text("Info: ", 0, 14));
-
-            UIConsole1.UIElements[auswahl].selected = true;
-
-            UIConsole1.DrawUIElements();
-        }
-
-        public int Auswahl
-        {
-            get
-            {
-                return auswahl;
-            }
-            set
-            {
-                UIConsole1.UIElements[auswahl].selected = false;
-                auswahl = value;
-                if (Auswahl < 0) auswahl = maxRange;
-                else if (Auswahl > maxRange) auswahl = 0;
-
-                UIConsole1.UIElements[auswahl].selected = true;
-                UIConsole1.DrawUIElements();
-            }
-        }
+        public UIConsole Start()
+        { 
+            UIConsole1.Start(this); // UIConsole starten, übergibt den Automaten
+            return UIConsole1;      // UIConsole zurückgeben an Main
+        }       
         public Automat(int kaffee, int wasser, int milch, status aktuellerStatus = status.bereit, int auswahl = 0)
         {
             this.kaffee = kaffee;
@@ -140,12 +109,12 @@ namespace Kaffeeautomat
             AktuellerStatus = status.bereit;
             UIConsole1.PrintInfo($"Wartung beendet.");
         }
-        public void AuswahlAusfuheren()
+        public void AuswahlAusfuheren(int auswahl)
         {
             if (!Pruefen(sorten[auswahl]))
             {
                 UIConsole1.PrintInfo($"Fehler! Bitte warten Sie das Gerät!");
-                AktuellerStatus = status.Wartung;
+                AktuellerStatus = status.benoetigt_Wartung;
                 return;
             }
             UIConsole1.PrintInfo($"{sorten[auswahl].bezeichnung} wird zubereitet, bitte warten!");
