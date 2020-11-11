@@ -11,7 +11,7 @@ namespace Kaffeeautomat
         protected ConsoleColor bColor;
         public bool selected;
 
-        public string TextWithDraw
+        public string TextWithDraw // ändert den Text in einem UIObject und zeichnet nur dieses Object mit Draw() neu
         {
             get
             {
