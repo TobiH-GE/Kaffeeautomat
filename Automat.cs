@@ -19,6 +19,7 @@ namespace Kaffeeautomat
         public int kaffee;
         public int wasser;
         public int milch;
+        public int abfall;
         public status aktuellerStatus;
         public UI UserInterface;
 
@@ -39,6 +40,7 @@ namespace Kaffeeautomat
             this.kaffee = kaffee;
             this.wasser = wasser;
             this.milch = milch;
+            abfall = 0;
             this.UserInterface = ui;
             this.aktuellerStatus = status.bereit;
 
@@ -48,7 +50,8 @@ namespace Kaffeeautomat
         {
             if (auswahl.mengeKaffee > kaffee ||
                 auswahl.dauerWasser > wasser*10 ||
-                auswahl.dauerMilch > milch*10)
+                auswahl.dauerMilch > milch*10 ||
+                abfall >= 100)
                 return false;
             return true;
         }
@@ -70,6 +73,7 @@ namespace Kaffeeautomat
         }
         private bool Mahlen(int fach)
         {
+            abfall++;
             // -> Mahlwerk aktivieren
             Thread.Sleep(2000);
             return true;
@@ -90,7 +94,7 @@ namespace Kaffeeautomat
 
         public string GetStatusString()
         {
-            string myString = $"Kaffee(g): {kaffee} Wasserstand: {wasser} Milch: {milch} Status: {AktuellerStatus}                 ";
+            string myString = $"Kaffee(g): {kaffee} Wasserstand: {wasser} Milch: {milch} Abfall: {abfall} Status: {AktuellerStatus}                 ";
             return myString;
         }
 
@@ -102,6 +106,7 @@ namespace Kaffeeautomat
             kaffee = 1000;
             wasser = 1000;
             milch = 500;
+            abfall = 0;
             AktuellerStatus = status.bereit;
             UserInterface.PrintInfo($"Wartung beendet.");
         }
