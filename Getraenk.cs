@@ -17,6 +17,5 @@
             this.dauerWasser = dauerWasser;
             this.dauerMilch = dauerMilch;
         }
-    }
-    
+    }  
 }

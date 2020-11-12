@@ -26,7 +26,7 @@ namespace Kaffeeautomat
                 else if (Auswahl > maxRange) auswahl = 0;
 
                 UIElements[auswahl].selected = true;
-                DrawUIElements(); // Auswahl hat sich geändert, zeichne die UI neu
+                DrawUIElements(); // Auswahl hat sich geändert, zeichne das UserInterface neu
             }
         }
 
@@ -36,13 +36,13 @@ namespace Kaffeeautomat
 
             for (int i = 0; i < Automat.sorten.Count; i++)
             {
-                UIElements.Add(new Button(Automat.sorten[i].bezeichnung, 5, i + 5));
+                UIElements.Add(new UIButton(Automat.sorten[i].bezeichnung, 5, i + 5));
             }
-            UIElements.Add(new Text("Kaffeeautomat by TobiH!", 0, 0));
-            UIElements.Add(new Text(automat.GetStatusString(), 0, 1));
-            UIElements.Add(new Text("Folgende Sorten stehen zur Auswahl:", 0, 3));
-            UIElements.Add(new Text("W -> Wartung, X -> ausschalten", 0, 12));
-            UIElements.Add(new Text("Info: ", 0, 14));
+            UIElements.Add(new UIText("Kaffeeautomat by TobiH!", 0, 0));
+            UIElements.Add(new UIText(automat.GetStatusString(), 0, 1));
+            UIElements.Add(new UIText("Folgende Sorten stehen zur Auswahl:", 0, 3));
+            UIElements.Add(new UIText("W -> Wartung, X -> ausschalten", 0, 12));
+            UIElements.Add(new UIText("Info: ", 0, 14));
 
             UIElements[auswahl].selected = true;
 

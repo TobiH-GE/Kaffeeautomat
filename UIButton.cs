@@ -2,9 +2,9 @@
 
 namespace Kaffeeautomat
 {
-    class Button : UIObject
+    class UIButton : UIObject
     {
-        public Button(string text, int x, int y, ConsoleColor fColor = ConsoleColor.White, ConsoleColor bColor = ConsoleColor.Black, bool selected = false)
+        public UIButton(string text, int x, int y, ConsoleColor fColor = ConsoleColor.White, ConsoleColor bColor = ConsoleColor.Black, bool selected = false)
         {
             this.text = text;
             this.x = x;
@@ -13,6 +13,5 @@ namespace Kaffeeautomat
             this.bColor = bColor;
             this.selected = selected;
         }
-    }
-    
+    }  
 }

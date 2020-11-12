@@ -2,9 +2,9 @@
 
 namespace Kaffeeautomat
 {
-    class Text : UIObject
+    class UIText : UIObject
     {
-        public Text(string text, int x, int y, ConsoleColor fColor = ConsoleColor.White, ConsoleColor bColor = ConsoleColor.Black, bool selected = false)
+        public UIText(string text, int x, int y, ConsoleColor fColor = ConsoleColor.White, ConsoleColor bColor = ConsoleColor.Black, bool selected = false)
         {
             this.text = text;
             this.x = x;

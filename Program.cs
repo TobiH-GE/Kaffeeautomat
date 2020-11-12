@@ -7,12 +7,13 @@ namespace Kaffeeautomat
     {
         static void Main(string[] args)
         {
-            Automat aAutomat = new Automat(1000, 1000, 500); // neuer Automat (Kaffee, Wassermenge, Milch)
-            var aUIConsole = aAutomat.Start(); // Automat starten, liefert vom Automaten verwendete UI zurück
+            UI UserInterface = new UIConsole(); // erstelle ein neues Konsolen-UserInterface
+            //UI UserInterface = new UIGraphic(); // TODO: alternativ ein grafisches UserInterface
+            Automat aAutomat = new Automat(1000, 1000, 500, UserInterface); // neuer Automat (Kaffee, Wassermenge, Milch, UserInterface)
 
             do
             {
-                aUIConsole.WaitForInput();
+                UserInterface.WaitForInput();
             } while (aAutomat.AktuellerStatus != status.ausgeschaltet);
             
         }
